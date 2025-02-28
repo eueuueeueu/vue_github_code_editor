@@ -125,8 +125,13 @@
         </div>
         <div
           v-show="bottomBarVisible"
-          class="w-full h-[200px] bg-[#1e1e1e] border-t-2 border-t-[#414141]"
-        ></div>
+          class="relative w-full h-[200px] bg-[#1e1e1e] border-t-2 border-t-[#414141]"
+        >
+          <i
+            ref="bottomBarPointer"
+            class="absolute top-0 left-0 w-full h-[4px] cursor-row-resize transition-all hover:bg-[#007fd4]"
+          ></i>
+        </div>
       </div>
       <div v-show="rightBarVisible" class="w-[307px] bg-[#252526]"></div>
     </div>
@@ -178,7 +183,14 @@
 // v-指令名:参数=绑定的值 v-on v-bind
 // v-指令名:参数,修饰符=绑定的值 v-on
 
-import { ref, watchEffect } from 'vue'
+// 命名规范：组合式函数的名称必须以use开头
+// 普通函数和组合式函数有什么区别？
+// 组合式函数需要有组合式API的参与 (ref、onMounted、watchEffect...)的参与
+// 为什么要封装组合式函数？为了对状态的复用
+// 组合式函数如何正确的使用？
+// 组合式菌数只能使用在两个位置:组件的script标签的顶层。其它组合式函数中。
+
+import { ref, watchEffect, isRef, unref, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import { clickOutside, useApi } from '@/hooks'
 import axios from 'axios'
@@ -189,10 +201,10 @@ const leftBarVisible = ref(true)
 const rightBarVisible = ref(false)
 const bottomBarVisible = ref(false)
 
-const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory'), {
-  defaultData: [],
-  manual: true,
-})
+// const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory'), {
+//   defaultData: [],
+//   manual: true,
+// })
 
 function actionMenu(callback) {
   const menuIcons = [
@@ -210,7 +222,7 @@ function actionMenu(callback) {
 const { menuIcons, activeMenuItemIndex } = actionMenu(function (key) {
   switch (key) {
     case 0:
-      run()
+      // run()
       break
     case 1:
       console.log('111')
@@ -274,4 +286,46 @@ const {
   showtip: showtip_dropdown,
   hidetip: hidetip_dropdown,
 } = actionDropdown()
+
+function useMoveDistance(elementRef) {
+  const distanceX = ref(0)
+  const distanceY = ref(0)
+  onMounted(() => {
+    if (!(isRef(elementRef) && unref(elementRef) instanceof HTMLElement))
+      throw new Error('ElementRef不是一个ref数据或其值不是一个HTML元素')
+    unref(elementRef).addEventListener('mousedown', ({ x: startX, y: startY }) => {
+      const onMousemove = ({ x: currentX, y: currentY }) => {
+        distanceX.value = currentX - startX
+        distanceY.value = currentY - startY
+      }
+      document.addEventListener('mousemove', onMousemove)
+      document.addEventListener('mouseup', () =>
+        document.removeEventListener('mousemove', onMousemove)
+      )
+    })
+  })
+  return { distanceX, distanceY }
+}
+const bottomBarPointer = ref(null)
+const { distanceX, distanceY } = useMoveDistance(bottomBarPointer)
+watchEffect(() => {
+  console.log(distanceX.value, distanceY.value)
+})
 </script>
+<!-- scoped是样式的隔离。代表这里的样式不会作用与其他的页面 -->
+<style scoped>
+@keyframes delay {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: #007fd4;
+  }
+}
+.highlight {
+  animation: delay 1s forwards;
+}
+</style>

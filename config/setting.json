@@ -1,0 +1,16 @@
+{
+  "layout": {
+    "bottomBarStatus": {
+      "visible": true,
+      "height": 200
+    },
+    "leftBarStatus": {
+      "visible": true,
+      "width": 200
+    },
+    "rightBarStatus": {
+      "visible": true,
+      "width": 200
+    }
+  }
+}

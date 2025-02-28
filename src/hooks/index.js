@@ -1,4 +1,5 @@
 import { ref, onMounted } from 'vue'
+import defaultSetting from '../../config/setting.json'
 // 组合式API hooks
 // 基于vue提供的api自定义clickOutside API
 export function clickOutside(domRef, callback) {
@@ -14,6 +15,7 @@ export function clickOutside(domRef, callback) {
   })
 }
 export function useApi(api, option = {}) {
+  // 状态
   const data = ref(option.defaultData ?? null)
   const error = ref(null)
   const loading = ref(true)
@@ -34,4 +36,8 @@ export function useApi(api, option = {}) {
   }
   run()
   return { data, error, loading }
-} 
+}
+
+export function useSetting() {
+  console.log(defaultSetting);
+}

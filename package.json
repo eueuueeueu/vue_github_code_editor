@@ -12,6 +12,7 @@
     "@iconify/json": "^2.2.310",
     "@iconify/vue": "^4.3.0",
     "axios": "^1.8.1",
+    "localforage": "^1.10.0",
     "splitpanes": "^3.1.8",
     "vue": "^3.5.13"
   },
