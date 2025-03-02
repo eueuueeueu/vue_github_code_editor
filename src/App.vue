@@ -236,13 +236,48 @@
       </div>
       <div
         v-show="setting?.layout?.rightBar.visible"
-        class="relative w-[307px] bg-[#252526]"
+        class="relative w-[307px] bg-[#252526] flex flex-col"
         :style="{ width: setting?.layout?.rightBar.width + 'px' }"
       >
         <i
           ref="rightBarPointer"
           class="absolute top-0 left-0 w-[4px] h-full cursor-col-resize transition-all hover:bg-[#007fd4]"
         ></i>
+        <div class="flex justify-between items-center px-[7px] pt-[5px] text-[#787879]">
+          <div class="flex">
+            <Icon
+              class="text-[21px] text-[#c0bdc0] hover:bg-[#313232] px-[3px] pb-[5px] mr-[3px] border-b border-white"
+              icon="fluent-mdl2:office-chat"
+            />
+            <Icon
+              class="text-[23px] hover:bg-[#313232] px-[3px] pb-[6px]"
+              icon="mynaui:book-plus"
+            />
+          </div>
+          <div class="flex">
+            <Icon
+              class="text-[25px] hover:bg-[#313232] px-[3px] pb-[5px]"
+              icon="clarity:add-line"
+            />
+            <Icon
+              class="text-[25px] hover:bg-[#313232] px-[3px] pb-[5px]"
+              icon="material-symbols-light:history-rounded"
+            />
+            <Icon
+              class="text-[25px] hover:bg-[#313232] px-[3px] pb-[5px]"
+              icon="mingcute:more-1-line"
+            />
+            <Icon
+              class="text-[25px] text-[#c0bdc0] hover:bg-[#313232] px-[3px] pb-[5px]"
+              icon="ic:twotone-close"
+              @click.stop="
+                updateLayoutSetting({
+                  rightBar: { visible: !setting?.layout.rightBar.visible },
+                })
+              "
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class="w-full h-[22px] bg-[#007acc] flex justify-between text-[#fff] text-[12px]">
