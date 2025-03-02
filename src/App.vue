@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden flex flex-col box-border">
+  <div class="w-screen h-screen overflow-hidden flex flex-col box-border select-none">
     <div class="relative px-[5px] w-full h-[35px] bg-[#3c3c3c] flex justify-between items-center">
       <Icon icon="token-branded:imgnai" class="text-[30px]" />
       <!-- top-search -->
@@ -17,13 +17,31 @@
       </div>
       <div class="flex items-center text-[18px] text-[#cccccc]">
         <Icon icon="codicon:layout" class="hover:text-[#fff] mx-[3px]" />
-        <div class="flex" @click.stop="leftBarVisible = !leftBarVisible">
-          <Icon v-if="leftBarVisible" icon="ri:side-bar-fill" class="hover:text-[#fff] mx-[3px]" />
+        <div
+          class="flex"
+          @click.stop="
+            updateLayoutSetting({
+              leftBar: { visible: !setting?.layout.leftBar.visible },
+            })
+          "
+        >
+          <Icon
+            v-if="setting?.layout?.leftBar.visible"
+            icon="ri:side-bar-fill"
+            class="hover:text-[#fff] mx-[3px]"
+          />
           <Icon v-else icon="ri:side-bar-line" class="hover:text-[#fff] mx-[3px]" />
         </div>
-        <div class="flex" @click.stop="bottomBarVisible = !bottomBarVisible">
+        <div
+          class="flex"
+          @click.stop="
+            updateLayoutSetting({
+              bottomBar: { visible: !setting?.layout.bottomBar.visible },
+            })
+          "
+        >
           <Icon
-            v-if="bottomBarVisible"
+            v-if="setting?.layout?.bottomBar.visible"
             icon="material-symbols:dock-to-bottom"
             class="hover:text-[#fff] mx-[3px]"
           />
@@ -33,8 +51,19 @@
             class="hover:text-[#fff] mx-[3px]"
           />
         </div>
-        <div class="flex" @click.stop="rightBarVisible = !rightBarVisible">
-          <Icon v-if="rightBarVisible" icon="bxs:dock-right" class="hover:text-[#fff] mx-[3px]" />
+        <div
+          class="flex"
+          @click.stop="
+            updateLayoutSetting({
+              rightBar: { visible: !setting?.layout.rightBar.visible },
+            })
+          "
+        >
+          <Icon
+            v-if="setting?.layout?.rightBar.visible"
+            icon="bxs:dock-right"
+            class="hover:text-[#fff] mx-[3px]"
+          />
           <Icon v-else icon="bx:dock-right" class="hover:text-[#fff] mx-[3px]" />
         </div>
       </div>
@@ -62,8 +91,11 @@
           <Icon icon="weui:setting-outlined" class="hover:text-[#fff] text-[30px] my-[10px]" />
         </div>
       </div>
-      <div v-show="leftBarVisible" class="relative w-[307px] bg-[#252526]">
-        <!-- <i class=" absolute top-0 right-0 bg-[#252526] hover:bg-[#007fd4] transition ease-in-out delay-150 cursor-ew-resize w-[4px] h-full"></i> -->
+      <div
+        v-show="setting?.layout?.leftBar.visible"
+        :style="{ width: setting?.layout?.leftBar.width + 'px' }"
+        class="relative w-[307px] bg-[#252526]"
+      >
         <div class="flex justify-between p-[8px] items-center text-[#bbbbbb]">
           <span class="text-[12px] cursor-default select-none">EXPLORER</span>
           <div
@@ -97,35 +129,53 @@
         </div>
         <div class="FileResource">
           <ul>
-            <li v-for="file in data" :key="file.name" v-text="file.name" class="text-[#fff]"></li>
+            <li
+              v-for="file in data"
+              :key="file.name"
+              v-text="file.name"
+              class="text-[#fff] overflow-hidden whitespace-nowrap text-ellipsis"
+            ></li>
           </ul>
         </div>
+        <i
+          ref="leftBarPointer"
+          class="absolute top-0 right-0 w-[4px] h-full cursor-col-resize transition-all hover:bg-[#007fd4]"
+        ></i>
       </div>
-      <div class="flex-1 bg-[#1e1e1e] flex flex-col justify-center items-center">
-        <Icon icon="ix:book" class="flex-1 max-w-[300px] max-h-[300px] w-fit text-[#151515]" />
-        <div
-          class="text-[#707070] w-[280px] select-none h-[156px] flex justify-between items-center flex-col"
-        >
+      <div class="flex-1 bg-[#1e1e1e] flex flex-col justify-between items-center">
+        <div class="flex flex-col items-center flex-1">
+          <Icon
+            v-if="setting?.layout?.bottomBar.height < 500"
+            icon="ix:book"
+            class="flex-1 max-w-[300px] max-h-[300px] w-fit text-[#151515]"
+          />
           <div
-            v-for="item in shortcutKey"
-            v-bind:key="item"
-            class="flex justify-between items-center w-full"
+            v-if="setting?.layout?.bottomBar.height < 300"
+            class="text-[#707070] w-[280px] select-none h-[156px] flex justify-between items-center flex-col"
           >
-            <p class="mr-[15px] w-[130px] text-[13px] text-right" v-text="item.name"></p>
-            <div class="flex flex-1 justify-start">
-              <template v-for="i in item.keywords" v-bind:key="i">
-                <span
-                  class="px-[5px] text-[#a9a9a9] bg-[#2c2c2c] flex justify-center items-center text-[12px]"
-                  v-text="i"
-                ></span>
-                <span v-if="i !== item.keywords[item.keywords.length - 1]">&nbsp;+&nbsp;</span>
-              </template>
+            <div
+              v-for="item in shortcutKey"
+              v-bind:key="item"
+              class="flex justify-between items-center w-full"
+            >
+              <p class="mr-[15px] w-[130px] text-[13px] text-right" v-text="item.name"></p>
+              <div class="flex flex-1 justify-start">
+                <template v-for="i in item.keywords" v-bind:key="i">
+                  <span
+                    class="px-[5px] text-[#a9a9a9] bg-[#2c2c2c] flex justify-center items-center text-[12px]"
+                    v-text="i"
+                  ></span>
+                  <span v-if="i !== item.keywords[item.keywords.length - 1]">&nbsp;+&nbsp;</span>
+                </template>
+              </div>
             </div>
           </div>
         </div>
+        <!-- v-if="setting?.layout?.bottomBar.height >50" -->
         <div
-          v-show="bottomBarVisible"
-          class="relative w-full h-[200px] bg-[#1e1e1e] border-t-2 border-t-[#414141]"
+          v-show="setting?.layout?.bottomBar.visible"
+          class="relative w-full min-h-[4px] h-[200px] bg-[#1e1e1e] border-t-2 border-t-[#414141]"
+          :style="{ height: setting?.layout?.bottomBar.height + 'px' }"
         >
           <i
             ref="bottomBarPointer"
@@ -133,7 +183,16 @@
           ></i>
         </div>
       </div>
-      <div v-show="rightBarVisible" class="w-[307px] bg-[#252526]"></div>
+      <div
+        v-show="setting?.layout?.rightBar.visible"
+        class="relative w-[307px] bg-[#252526]"
+        :style="{ width: setting?.layout?.rightBar.width + 'px' }"
+      >
+        <i
+          ref="rightBarPointer"
+          class="absolute top-0 left-0 w-[4px] h-full cursor-col-resize transition-all hover:bg-[#007fd4]"
+        ></i>
+      </div>
     </div>
     <div class="w-full h-[22px] bg-[#007acc] flex justify-between text-[#fff] text-[12px]">
       <div class="flex">
@@ -190,21 +249,32 @@
 // 组合式函数如何正确的使用？
 // 组合式菌数只能使用在两个位置:组件的script标签的顶层。其它组合式函数中。
 
-import { ref, watchEffect, isRef, unref, onMounted } from 'vue'
+import {
+  ref,
+  watchEffect,
+  watch,
+  isRef,
+  unref,
+  onMounted,
+  reactive,
+  toRef,
+  toRefs,
+  toRaw,
+  toValue,
+} from 'vue'
 import { Icon } from '@iconify/vue'
-import { clickOutside, useApi } from '@/hooks'
+import { clickOutside, useApi, useSetting } from '@/hooks'
 import axios from 'axios'
 // 导入拖拽库的组件和 CSS
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-const leftBarVisible = ref(true)
-const rightBarVisible = ref(false)
-const bottomBarVisible = ref(false)
 
-// const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory'), {
-//   defaultData: [],
-//   manual: true,
-// })
+const { setting, updateSetting: updateLayoutSetting } = useSetting('layout')
+// 请求文件列表数据
+const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory'), {
+  defaultData: [],
+  manual: true,
+})
 
 function actionMenu(callback) {
   const menuIcons = [
@@ -222,7 +292,7 @@ function actionMenu(callback) {
 const { menuIcons, activeMenuItemIndex } = actionMenu(function (key) {
   switch (key) {
     case 0:
-      // run()
+      run()
       break
     case 1:
       console.log('111')
@@ -287,7 +357,7 @@ const {
   hidetip: hidetip_dropdown,
 } = actionDropdown()
 
-function useMoveDistance(elementRef) {
+function useMoveDistance(elementRef, callback) {
   const distanceX = ref(0)
   const distanceY = ref(0)
   onMounted(() => {
@@ -299,18 +369,52 @@ function useMoveDistance(elementRef) {
         distanceY.value = currentY - startY
       }
       document.addEventListener('mousemove', onMousemove)
-      document.addEventListener('mouseup', () =>
+      document.addEventListener('mouseup', () => {
+        callback()
         document.removeEventListener('mousemove', onMousemove)
-      )
+      })
     })
   })
   return { distanceX, distanceY }
 }
 const bottomBarPointer = ref(null)
-const { distanceX, distanceY } = useMoveDistance(bottomBarPointer)
-watchEffect(() => {
-  console.log(distanceX.value, distanceY.value)
+let bottombarHeight = setting.value.layout.bottomBar.height
+const { distanceY: bottomBar_distanceY } = useMoveDistance(bottomBarPointer, () => {
+  bottombarHeight = setting.value.layout.bottomBar.height
 })
+watch([bottomBar_distanceY], () => {
+  updateLayoutSetting({
+    bottomBar: { height: bottombarHeight - bottomBar_distanceY.value },
+  })
+})
+const leftBarPointer = ref(null)
+let leftBarWidth = setting.value.layout.leftBar.width
+const { distanceX: leftBar_distanceX } = useMoveDistance(leftBarPointer, () => {
+  leftBarWidth = setting.value.layout.leftBar.width
+})
+watch([leftBar_distanceX], () => {
+  updateLayoutSetting({
+    leftBar: { width: leftBarWidth + leftBar_distanceX.value },
+  })
+})
+const rightBarPointer = ref(null)
+let rightBarWidth = setting.value.layout.leftBar.width
+const { distanceX: rightBar_distanceX } = useMoveDistance(rightBarPointer, () => {
+  rightBarWidth = setting.value.layout.rightBar.width
+})
+watch([rightBar_distanceX], () => {
+  updateLayoutSetting({
+    rightBar: { width: rightBarWidth - rightBar_distanceX.value },
+  })
+})
+
+// reactive的参数只接受对象
+// reactive在使用的时候 无论是在script块中 还是在template块中 都可以直接通过属性名访问
+// ref的参数是任意类型
+// ref在使用的时候 在script块中需要通过.value后跟属性名取值 在template块中可以直接通过属性名访问(不需要.value)
+// 注意：reactive数据可以通过toRef、toRefs这两个API转换为ref响应式数据
+// reactive还原原始数据 使用toRaw
+// ref还原原始数据 SON.parse(JsON.stringify(toValue(ref数据)))
 </script>
 <!-- scoped是样式的隔离。代表这里的样式不会作用与其他的页面 -->
 <style scoped>

@@ -1,5 +1,7 @@
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, toValue, watch, reactive, toRef, toRaw } from 'vue'
 import defaultSetting from '../../config/setting.json'
+import _ from 'lodash'
+import store from 'store'
 // 组合式API hooks
 // 基于vue提供的api自定义clickOutside API
 export function clickOutside(domRef, callback) {
@@ -38,6 +40,21 @@ export function useApi(api, option = {}) {
   return { data, error, loading }
 }
 
-export function useSetting() {
-  console.log(defaultSetting);
+export function useSetting(key) {
+  const config = reactive({ setting: null })
+  const settingFromChche = store.get('setting')
+  if (!settingFromChche) {
+    config.setting = defaultSetting
+    store.set('setting', defaultSetting)
+  } else {
+    config.setting = settingFromChche
+  }
+  const updateSetting = (params) => {
+    const setting = _.merge(config.setting, { layout: { ...params } })
+    config.setting = setting
+    store.set('setting', setting)
+  }
+  return { setting: toRef(config, 'setting'), updateSetting }
 }
+// 右键菜单
+// function useMenucontext(){}
