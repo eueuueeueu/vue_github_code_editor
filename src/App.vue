@@ -1,7 +1,7 @@
 <template>
   <div class="w-screen h-screen overflow-hidden flex flex-col box-border select-none">
     <div class="relative px-[5px] w-full h-[35px] bg-[#3c3c3c] flex justify-between items-center">
-      <Icon icon="token-branded:imgnai" class="text-[30px]" />
+      <Icon icon="svg-spinners:bars-scale" class="text-[20px]" />
       <!-- top-search -->
       <div
         class="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] flex justify-center items-center w-[40%] max-w-[580px] h-[24px] text-[#cccccc] text-[12px] bg-[#4b4b4b] border-[1px] border-[#737373] rounded-md"
@@ -236,14 +236,14 @@
       </div>
       <div
         v-show="setting?.layout?.rightBar.visible"
-        class="relative w-[307px] bg-[#252526] flex flex-col"
+        class="relative w-[307px] bg-[#252526] flex flex-col justify-between items-center pb-[20px]"
         :style="{ width: setting?.layout?.rightBar.width + 'px' }"
       >
         <i
           ref="rightBarPointer"
           class="absolute top-0 left-0 w-[4px] h-full cursor-col-resize transition-all hover:bg-[#007fd4]"
         ></i>
-        <div class="flex justify-between items-center px-[7px] pt-[5px] text-[#787879]">
+        <div class="flex w-full justify-between items-center px-[7px] pt-[5px] text-[#787879]">
           <div class="flex">
             <Icon
               class="text-[21px] text-[#c0bdc0] hover:bg-[#313232] px-[3px] pb-[5px] mr-[3px] border-b border-white"
@@ -277,6 +277,12 @@
               "
             />
           </div>
+        </div>
+        <div
+          contenteditable="true"
+          class="relative w-[90%] text-[16px] pb-[30px] indent-[5px] pt-[5px] outline-0 focus:border text-[#aeafad] min-h-[50px] max-h-[500px] break-words overflow-y-auto focus:border-[#007fd4] rounded-md bg-[#3c3c3c]"
+        >
+          <!-- ！！！任务：把字体图标找到放在这里就好了 -->
         </div>
       </div>
     </div>
