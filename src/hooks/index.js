@@ -57,4 +57,14 @@ export function useSetting(key) {
   return { setting: toRef(config, 'setting'), updateSetting }
 }
 // 右键菜单
-// function useMenucontext(){}
+export function useMenuContext(menuIsblock, topDistance, leftDistance) {
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+    topDistance.value = e.y
+    leftDistance.value = e.x
+    menuIsblock.value = true
+    document.addEventListener('click', () => {
+      if (menuIsblock.value = true) menuIsblock.value = false
+    })
+  })
+}

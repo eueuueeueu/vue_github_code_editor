@@ -127,7 +127,7 @@
             </div>
           </div>
         </div>
-        <div class="FileResource">
+        <div class="fileResource">
           <ul>
             <li
               v-for="file in data"
@@ -171,7 +171,6 @@
             </div>
           </div>
         </div>
-        <!-- v-if="setting?.layout?.bottomBar.height >50" -->
         <div
           v-show="setting?.layout?.bottomBar.visible"
           class="relative w-full min-h-[4px] h-[200px] bg-[#1e1e1e] border-t-2 border-t-[#414141]"
@@ -179,8 +178,60 @@
         >
           <i
             ref="bottomBarPointer"
-            class="absolute top-0 left-0 w-full h-[4px] cursor-row-resize transition-all hover:bg-[#007fd4]"
+            class="absolute top-[-3px] left-0 w-full h-[4px] cursor-row-resize transition-all hover:bg-[#007fd4]"
           ></i>
+          <div class="flex h-[30px]">
+            <div class="w-[50%] flex justify-start">
+              <span
+                class="mx-[10px] h-full flex items-center text-[10px] text-[#ffffff] hover:text-[#fff] cursor-pointer border-b border-white"
+                >PROBLEMS</span
+              >
+              <span
+                class="mx-[10px] h-full flex items-center text-[10px] text-[#8f9797] hover:text-[#fff] cursor-pointer"
+                >OUTPUT</span
+              >
+              <span
+                class="mx-[10px] h-full flex items-center text-[10px] text-[#8f9797] hover:text-[#fff] cursor-pointer"
+                >TERMINAL</span
+              >
+            </div>
+            <div class="w-[50%] flex">
+              <div class="relative flex-1 flex items-center rounded-md">
+                <input
+                  type="text"
+                  placeholder="Filter (e.g. text, **/*ts,!**/node_modules/**)"
+                  class="w-full h-[80%] indent-[5px] text-[10px] text-white rounded-md focus:border focus:border-[#007fd4] outline-none bg-[#3c3c3c]"
+                />
+                <Icon
+                  class="absolute top-[50%] -translate-y-[50%] right-[5px] text-[#c0bdc0] text-[18px]"
+                  icon="iconamoon:funnel-thin"
+                />
+              </div>
+              <div class="flex h-full items-center">
+                <Icon
+                  class="text-[22px] mx-[3px] text-[#c0bdc0] hover:bg-[#313232] px-[3px]"
+                  icon="codicon:collapse-all"
+                />
+                <Icon
+                  class="text-[22px] mx-[3px] text-[#c0bdc0] hover:bg-[#313232] px-[3px]"
+                  icon="codicon:list-flat"
+                />
+                <Icon
+                  class="text-[22px] mx-[3px] text-[#c0bdc0] hover:bg-[#313232] px-[3px]"
+                  icon="uiw:up"
+                />
+                <Icon
+                  class="text-[22px] mx-[3px] text-[#c0bdc0] hover:bg-[#313232] px-[3px]"
+                  icon="ic:twotone-close"
+                  @click.stop="
+                    updateLayoutSetting({
+                      bottomBar: { visible: !setting?.layout.bottomBar.visible },
+                    })
+                  "
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -225,6 +276,32 @@
       <div></div>
     </div>
   </div>
+  <!-- 右键菜单 -->
+  <ul
+    v-show="menuIsblock"
+    :style="{ top: topDistance + 'px', left: leftDistance + 'px' }"
+    class="menuContext flex flex-col justify-center items-center rounded-md fixed z-[999] bg-[#252526] text-[#b7b7b8] py-[8px] border-[1px] border-[#454545]"
+  >
+    <template v-for="(item, index) in menuDate" :key="item">
+      <li
+        class="w-[96%] py-[4px] flex justify-between px-[20px] cursor-pointer hover:bg-[#0078d4] rounded-md"
+      >
+        <span
+          v-text="item.name"
+          class="w-[50%] text-[13px] overflow-hidden whitespace-nowrap text-ellipsis"
+        ></span>
+        <span
+          v-if="item.shortcutKey"
+          v-text="item.shortcutKey"
+          class="text-[13px] whitespace-nowrap"
+        ></span>
+      </li>
+      <i
+        v-if="index === 1 || index === 5 || index === 6"
+        class="w-full h-[1px] bg-[#454545] my-[4px]"
+      ></i>
+    </template>
+  </ul>
 </template>
 <script setup>
 // 禁止DOM操作 转而使用指令来间接实现DOM操作
@@ -263,7 +340,7 @@ import {
   toValue,
 } from 'vue'
 import { Icon } from '@iconify/vue'
-import { clickOutside, useApi, useSetting } from '@/hooks'
+import { clickOutside, useApi, useSetting, useMenuContext } from '@/hooks'
 import axios from 'axios'
 // 导入拖拽库的组件和 CSS
 import { Splitpanes, Pane } from 'splitpanes'
@@ -276,6 +353,43 @@ const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory
   manual: true,
 })
 
+// 右键菜单
+const [menuIsblock, topDistance, leftDistance] = [ref(false), ref(0), ref(0)]
+useMenuContext(menuIsblock, topDistance, leftDistance)
+const menuDate = [
+  {
+    name: 'New Text File',
+    shortcutKey: 'Ctrl+K N',
+  },
+  {
+    name: 'Open File Search Box',
+    shortcutKey: 'Ctrl+P',
+  },
+  {
+    name: 'Split Up',
+    shortcutKey: 'Ctrl+K Ctrl+\\',
+  },
+  {
+    name: 'Split Down',
+    shortcutKey: null,
+  },
+  {
+    name: 'Split Left',
+    shortcutKey: null,
+  },
+  {
+    name: 'Split Right',
+    shortcutKey: null,
+  },
+  {
+    name: 'New Window',
+    shortcutKey: null,
+  },
+  {
+    name: 'Lock Group',
+    shortcutKey: null,
+  },
+]
 function actionMenu(callback) {
   const menuIcons = [
     'fa-regular:copy',
