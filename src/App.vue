@@ -99,12 +99,8 @@
         <div class="flex justify-between p-[8px] items-center text-[#bbbbbb]">
           <span class="text-[12px] cursor-default select-none">EXPLORER</span>
           <div
-            @click.stop="opendropdown"
-            class="relative cursor-pointer inline-block w-[18px] text-center leading-[18px] h-[18px] rounded-sm hover:bg-[#363737]"
+            class="relative inline-block w-[18px] text-center leading-[18px] h-[18px] rounded-sm hover:bg-[#363737]"
           >
-            <span @mouseenter="showtip_dropdown" @mouseout="hidetip_dropdown" class="select-none"
-              >···</span
-            >
             <!-- 提示框 -->
             <div
               v-show="tooltipvisible"
@@ -113,18 +109,15 @@
               我是提示
             </div>
             <!-- 下拉菜单 -->
-            <div
-              ref="dropdownContainerRef"
-              v-show="dropdownVisible"
-              class="p-[4px] rounded-md absolute z-30 w-[160px] bg-[#252526] border-[1px] border-[#454545]"
-            >
-              <div
-                v-for="item in dropdownList"
-                v-bind:key="item"
-                class="h-[28px] leading-[28px] rounded-md text-[14px] hover:bg-[#0078d4]"
-                v-text="item"
-              ></div>
-            </div>
+            <dropdown @abc="triggerEvent" :data="dropdownList1">
+              <!-- 插槽slot -->
+              <span
+                @mouseenter="showtip_dropdown"
+                @mouseout="hidetip_dropdown"
+                class="select-none cursor-pointer"
+                >···</span
+              >
+            </dropdown>
           </div>
         </div>
         <div class="fileResource">
@@ -381,8 +374,9 @@ import {
   toValue,
 } from 'vue'
 import { Icon } from '@iconify/vue'
-import { clickOutside, useApi, useSetting, useMenuContext } from '@/hooks'
+import { useApi, useSetting, useMenuContext } from '@/hooks'
 import axios from 'axios'
+import dropdown from './components/dropdown.vue'
 // 导入拖拽库的组件和 CSS
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -458,7 +452,26 @@ const { menuIcons, activeMenuItemIndex } = actionMenu(function (key) {
 })
 
 // 视图和更多操作数据
-const dropdownList = ['Open Editors', 'Folders', 'Outline', 'Timeline']
+// const dropdownList1 = ['Open Editors', 'Folders', 'Outline', 'Timeline']
+const dropdownList1 = [
+  {
+    name: 'Open Editors',
+    disable: false,
+  },
+  {
+    name: 'Folders',
+    disable: true,
+  },
+  {
+    name: 'Outline',
+    disable: false,
+  },
+  {
+    name: 'Timeline',
+    disable: false,
+  },
+]
+const dropdownList2 = ['1111', '2222', '3333', '4444']
 // 快捷键数据
 const shortcutKey = [
   {
@@ -485,32 +498,31 @@ const sponsors = ref('Sourcegraph')
 const error_count = ref('0')
 const warning_count = ref('0')
 
-function actionDropdown() {
-  // 获取页面上的节点
-  const domRef = ref(null)
-  const menuVisible = ref(false)
-  const tipvisible = ref(false)
-  function open() {
-    menuVisible.value = !menuVisible.value
-    tipvisible.value = false
-  }
-  function showtip() {
-    if (!menuVisible.value) tipvisible.value = true
-  }
-  function hidetip() {
-    tipvisible.value = false
-  }
-  clickOutside(domRef, () => (menuVisible.value = false))
-  return { menuVisible, tipvisible, domRef, open, showtip, hidetip }
-}
-const {
-  menuVisible: dropdownVisible,
-  tipvisible: tooltipvisible,
-  domRef: dropdownContainerRef,
-  open: opendropdown,
-  showtip: showtip_dropdown,
-  hidetip: hidetip_dropdown,
-} = actionDropdown()
+// function actionDropdown() {
+//   // 获取页面上的节点
+//   const domRef = ref(null)
+//   const menuVisible = ref(false)
+//   const tipvisible = ref(false)
+//   function open() {
+//     menuVisible.value = !menuVisible.value
+//     tipvisible.value = false
+//   }
+//   function showtip() {
+//     if (!menuVisible.value) tipvisible.value = true
+//   }
+//   function hidetip() {
+//     tipvisible.value = false
+//   }
+//   return { menuVisible, tipvisible, domRef, open, showtip, hidetip }
+// }
+// const {
+//   menuVisible: dropdownVisible,
+//   tipvisible: tooltipvisible,
+//   domRef: dropdownContainerRef,
+//   open: opendropdown,
+//   showtip: showtip_dropdown,
+//   hidetip: hidetip_dropdown,
+// } = actionDropdown()
 
 function useMoveDistance(elementRef, callback) {
   const distanceX = ref(0)
@@ -562,6 +574,11 @@ watch([rightBar_distanceX], () => {
     rightBar: { width: rightBarWidth - rightBar_distanceX.value },
   })
 })
+
+function triggerEvent(){
+  console.log(1);
+  
+}
 
 // reactive的参数只接受对象
 // reactive在使用的时候 无论是在script块中 还是在template块中 都可以直接通过属性名访问

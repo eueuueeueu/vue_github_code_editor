@@ -4,7 +4,7 @@ import _ from 'lodash'
 import store from 'store'
 // 组合式API hooks
 // 基于vue提供的api自定义clickOutside API
-export function clickOutside(domRef, callback) {
+export function useClickOutside(domRef, callback) {
   // 获取DOM节点使用
   // 某些操作需要template渲染完成后执行
   // 执行的时机是在template挂载到页面之后(渲染完成之后)
