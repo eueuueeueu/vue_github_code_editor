@@ -1,7 +1,7 @@
 <template>
   <div v-for="item in props.data" :key="item.name">
     <div
-      class="text-[#cccccc] hover:bg-[#2a2d2e] overflow-hidden whitespace-nowrap text-ellipsis"
+      class="text-[#cccccc] hover:bg-[#2a2d2e] text-[15px] overflow-hidden whitespace-nowrap text-ellipsis"
       :style="{ paddingLeft: `${props.padding ?? 0}px` }"
       @click="emit('node-click', item.fullPath)"
     >
