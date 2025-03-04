@@ -13,7 +13,7 @@
       <div
         v-for="item in data"
         v-bind:key="item.name"
-        @click="showControl(item)"
+        @click="triggerEvent(item)"
         class="h-[28px] leading-[28px] rounded-md text-[14px]"
         :class="{
           'text-[#686868] cursor-not-allowed': item.disable,
@@ -34,10 +34,10 @@ const tipVisible = ref(false)
 const { data } = useAttrs()
 const main = ref(null)
 
-// const emit = defineEmits(['abc'])
-const showControl = (item) => {
+const emit = defineEmits(['checked'])
+const triggerEvent = (item) => {
   if (!item.disable) {
-    // emit
+    emit('checked', item)
     visible.value = false
   }
 }
