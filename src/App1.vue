@@ -121,15 +121,7 @@
           </div>
         </div>
         <div class="fileResource flex-1 overflow-auto scrollbar">
-          <!-- <ul>
-            <li
-              v-for="file in data"
-              :key="file.name"
-              v-text="file.name"
-              class="text-[#fff] overflow-hidden whitespace-nowrap text-ellipsis"
-            ></li>
-          </ul> -->
-          <tree :data="data" baz="a" />
+          <tree :data="data" :expandKeys="expandPaths" @node-click="expandList" />
         </div>
         <i
           ref="leftBarPointer"
@@ -380,6 +372,22 @@ import axios from 'axios'
 import Dropdown from './components/dropdown.vue'
 import Tree from './components/Tree.vue'
 
+// 指定在目录展开哪个
+const expandPaths = ref([])
+
+watchEffect(() => {
+  console.log(expandPaths.value)
+})
+
+// 因为fullPath是data中唯一不重复的值，所以拿path当id
+function expandList(fullPathId) {
+  const index = expandPaths.value.indexOf(fullPathId)
+  if (index > -1) {
+    expandPaths.value.splice(index, 1)
+  } else {
+    expandPaths.value.push(fullPathId)
+  }
+}
 const { setting, updateSetting: updateLayoutSetting } = useSetting('layout')
 // 请求文件列表数据
 const { loading, error, data, run } = useApi(() => axios.get('/api/fileDirectory'), {

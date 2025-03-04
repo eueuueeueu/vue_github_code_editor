@@ -1,20 +1,20 @@
 <template>
-  <div v-for="item in props.data" :key="item.name">
+  <div v-for="item in props.data" :key="item.id">
     <div
-      class="text-[#cccccc] hover:bg-[#2a2d2e] overflow-hidden whitespace-nowrap text-ellipsis"
+      class="text-[#111] hover:bg-[#2a2d2e] hover:text-white cursor-pointer"
       :style="{ paddingLeft: `${props.padding ?? 0}px` }"
-      @click="emit('node-click', item.fullPath)"
+      @click="emit('node-click', item.id)"
     >
-      {{ item.name }}
+      {{ item.label }}
     </div>
-    <Tree
-      v-if="item.children && item.children.length > 0 && props.expandKeys.includes(item.fullPath)"
+    <Tree2
+      v-if="item.children && item.children.length > 0 && props.expandKeys.includes(item.id)"
       :data="item.children"
-      :padding="props.padding + 15"
+      :padding="props.padding + 10"
       :expand-keys="props.expandKeys"
       @node-click="(id) => emit('node-click', id)"
     >
-    </Tree>
+    </Tree2>
   </div>
 </template>
 <script setup>
@@ -25,9 +25,9 @@
 // defineProps 侧重表达的是DOM属性 不会在HTML标签中
 // useAttrs 可以直接使用 没有数据检验和默认值的功能（不严谨但方便）
 // defineProps 不能直接使用 需要通过数据检验还具备默认值的功能（严谨但不方便）【强烈推荐】
-import { useAttrs, defineEmits, defineProps, defineOptions } from 'vue'
+import { useAttrs, defineProps, defineEmits, defineOptions } from 'vue'
 // 通过defineOptions来规定组件的名称
-defineOptions({ name: 'Tree' })
+defineOptions({ name: 'Tree2' })
 // 先define定义
 // const props = defineProps(['data','padding']) 不推荐写法
 // 只能规范数据类型 不能给默认值
